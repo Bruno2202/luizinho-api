@@ -45,6 +45,40 @@ export class ClientController {
         }
     }
 
+    async getById(req: FastifyRequest<{ Params: Client }>, reply: FastifyReply) {
+        try {
+            const { id } = req.params
+
+            const client: Client = await this.service.getById(id);
+
+            if (!client) {
+                return reply.code(200).send({
+                    client,
+                    message: "Nenhum cliente encontrado"
+                });
+            }
+
+            return reply.code(200).send(client);
+        } catch (error: any) {
+            console.log(`Erro ao buscar cliente: ${error.message}`);
+
+            switch (error.message) {
+                case "ID do cliente é inválido":
+                    reply.code(404).send({
+                        clients: [],
+                        message: error.message
+                    });
+                    break;
+
+                default:
+                    reply.code(500).send({
+                        message: error.message
+                    });
+                    break;
+            }
+        }
+    }
+
     async registerClient(req: FastifyRequest<{ Body: Client }>, reply: FastifyReply) {
         try {
             const client: Client = req.body

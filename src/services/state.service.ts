@@ -18,4 +18,16 @@ export class StateService {
             throw new Error(error.message);
         }
     }
+
+    async getById(id: string) {
+        try {
+            if (!id || id.trim().length === 0) {
+                throw new Error("ID do estado é inválido");
+            }
+
+            return await this.repository.getById(id);
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
 }

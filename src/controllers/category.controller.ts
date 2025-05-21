@@ -43,6 +43,38 @@ export class CategoryController {
         }
     }
 
+    async getById(req: FastifyRequest<{ Params: Category }>, reply: FastifyReply) {
+        try {
+            const { id } = req.params
+
+            const category: Category = await this.service.getById(id);
+
+            if (!category) {
+                return reply.code(200).send({
+                    message: "Nenhuma categoria encontrada"
+                });
+            }
+
+            return reply.code(200).send(category);
+        } catch (error: any) {
+            console.log(`Erro ao buscar categoria: ${error.message}`);
+
+            switch (error.message) {
+                case "ID da categoria é inválido":
+                    reply.code(404).send({
+                        message: error.message
+                    });
+                    break;
+
+                default:
+                    reply.code(500).send({
+                        message: error.message
+                    });
+                    break;
+            }
+        }
+    }
+
     async registerCategory(req: FastifyRequest<{ Body: Category }>, reply: FastifyReply) {
         try {
             const category: Category = req.body

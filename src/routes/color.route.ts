@@ -14,9 +14,16 @@ export default async function colorRoute(fastify: FastifyInstance) {
     })
 
     fastify.get(
-        '/color/:name',
+        '/color/description/:description',
         async (request: FastifyRequest<{ Params: Color }>, reply: FastifyReply) => {
             return controller.getByDescription(request, reply)
+        }
+    )
+
+    fastify.get(
+        '/color/id/:id',
+        async (request: FastifyRequest<{ Params: Color }>, reply: FastifyReply) => {
+            return controller.getById(request, reply)
         }
     )
 

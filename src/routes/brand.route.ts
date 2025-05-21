@@ -14,9 +14,16 @@ export default async function brandRoute(fastify: FastifyInstance) {
     })
 
     fastify.get(
-        '/brand/:name',
+        '/brand/name/:name',
         async (request: FastifyRequest<{ Params: Brand }>, reply: FastifyReply) => {
             return controller.getByName(request, reply)
+        }
+    )
+
+    fastify.get(
+        '/brand/id/:id',
+        async (request: FastifyRequest<{ Params: Brand }>, reply: FastifyReply) => {
+            return controller.getById(request, reply)
         }
     )
 

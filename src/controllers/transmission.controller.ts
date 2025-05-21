@@ -43,4 +43,37 @@ export class TransmissionController {
             }
         }
     }
+
+    async getById(req: FastifyRequest<{ Params: Transmission }>, reply: FastifyReply) {
+        try {
+            const { id } = req.params
+
+            const transmission: Transmission = await this.service.getById(id);
+
+            if (!transmission) {
+                return reply.code(200).send({
+                    transmission,
+                    message: "Nenhuma transmissão encontrada"
+                });
+            }
+
+            return reply.code(200).send(id);
+        } catch (error: any) {
+            console.log(`Erro ao buscar transmissão: ${error.message}`);
+
+            switch (error.message) {
+                case "ID da transmissão é inválido":
+                    reply.code(404).send({
+                        message: error.message
+                    });
+                    break;
+
+                default:
+                    reply.code(500).send({
+                        message: error.message
+                    });
+                    break;
+            }
+        }
+    }
 }

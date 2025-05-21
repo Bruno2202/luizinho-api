@@ -43,6 +43,38 @@ export class CityController {
         }
     }
 
+    async getById(req: FastifyRequest<{ Params: City }>, reply: FastifyReply) {
+        try {
+            const { id } = req.params
+
+            const city: City = await this.service.getById(id);
+
+            if (!city) {
+                return reply.code(200).send({
+                    message: "Nenhuma cidade encontrada"
+                });
+            }
+
+            return reply.code(200).send(city);
+        } catch (error: any) {
+            console.log(`Erro ao buscar cidade: ${error.message}`);
+
+            switch (error.message) {
+                case "ID da cidade é inválido":
+                    reply.code(404).send({
+                        message: error.message
+                    });
+                    break;
+
+                default:
+                    reply.code(500).send({
+                        message: error.message
+                    });
+                    break;
+            }
+        }
+    }
+
     async registerCity(req: FastifyRequest<{ Body: City }>, reply: FastifyReply) {
         try {
             const brand: City = req.body

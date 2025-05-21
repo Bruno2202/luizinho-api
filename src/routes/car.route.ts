@@ -8,11 +8,11 @@ import { service as brandService } from './brand.route';
 import { service as typeService } from './type.route';
 import { service as categoryService } from './category.route';
 import { service as transmissionService } from './transmission.route';
-// import { service as fuelService} from './fuel.route';
+import { service as fuelService } from './fuel.route';
 import { service as colorService } from './color.route';
 
 const repository = new CarRepository();
-export const service = new CarService(repository, modelService, brandService, typeService, categoryService, transmissionService, colorService);
+export const service = new CarService(repository, modelService, brandService, typeService, categoryService, transmissionService, fuelService, colorService);
 const controller = new CarController(service);
 
 export default async function carRoute(fastify: FastifyInstance) {
@@ -21,9 +21,16 @@ export default async function carRoute(fastify: FastifyInstance) {
     })
 
     fastify.get(
-        '/car/:description',
+        '/car/description/:description',
         async (request: FastifyRequest<{ Params: Car }>, reply: FastifyReply) => {
             return controller.getByDescription(request, reply)
+        }
+    )
+
+    fastify.get(
+        '/car/id/:description',
+        async (request: FastifyRequest<{ Params: Car }>, reply: FastifyReply) => {
+            return controller.getById(request, reply)
         }
     )
 

@@ -14,9 +14,16 @@ export default async function typeRoute(fastify: FastifyInstance) {
     });
 
     fastify.get(
-        '/type/:description',
+        '/type/description/:description',
         async (request: FastifyRequest<{ Params: Type }>, reply: FastifyReply) => {
             return controller.getByDescription(request, reply)
+        }
+    )
+
+    fastify.get(
+        '/type/id/:id',
+        async (request: FastifyRequest<{ Params: Type }>, reply: FastifyReply) => {
+            return controller.getById(request, reply)
         }
     )
 

@@ -43,6 +43,39 @@ export class ModelController {
         }
     }
 
+    async getById(req: FastifyRequest<{ Params: Model }>, reply: FastifyReply) {
+        try {
+            const { id } = req.params
+
+            const model: Model = await this.service.getById(id);
+
+            if (!model) {
+                return reply.code(200).send({
+                    model,
+                    message: "Nenhum modelo encontrado"
+                });
+            }
+
+            return reply.code(200).send(model);
+        } catch (error: any) {
+            console.log(`Erro ao buscar modelo: ${error.message}`);
+
+            switch (error.message) {
+                case "ID da modelo é inválido":
+                    reply.code(404).send({
+                        message: error.message
+                    });
+                    break;
+
+                default:
+                    reply.code(500).send({
+                        message: error.message
+                    });
+                    break;
+            }
+        }
+    }
+
     async registerModel(req: FastifyRequest<{ Body: Model }>, reply: FastifyReply) {
         try {
             const model: Model = req.body

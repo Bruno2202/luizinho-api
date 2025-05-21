@@ -13,6 +13,12 @@ export class BrandController {
 
     async getByName(req: FastifyRequest<{ Params: Brand }>, reply: FastifyReply) {
         try {
+            if (!req.params.name) {
+                return reply.code(200).send({
+                    message: "Nenhuma marca encontrada"
+                });
+            }
+
             const { name } = req.params
 
             const brands: Brand[] = await this.service.getByName(name);
@@ -29,6 +35,44 @@ export class BrandController {
 
             switch (error.message) {
                 case "Nome da marca é inválido":
+                    reply.code(400).send({
+                        message: error.message
+                    });
+                    break;
+
+                default:
+                    reply.code(500).send({
+                        message: error.message
+                    });
+                    break;
+            }
+        }
+    }
+
+    async getById(req: FastifyRequest<{ Params: Brand }>, reply: FastifyReply) {
+        try {
+            if (!req.params.id) {
+                return reply.code(200).send({
+                    message: "Nenhuma marca encontrada com o id informado"
+                });
+            }
+
+            const { id } = req.params
+
+            const brand: Brand = await this.service.getById(id);
+
+            if (!brand) {
+                return reply.code(200).send({
+                    message: "Nenhuma marca encontrada"
+                });
+            }
+
+            return reply.code(200).send(brand);
+        } catch (error: any) {
+            console.log(`Erro ao buscar marca: ${error.message}`);
+
+            switch (error.message) {
+                case "ID da marca é inválido":
                     reply.code(400).send({
                         message: error.message
                     });

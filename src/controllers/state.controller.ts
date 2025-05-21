@@ -43,4 +43,36 @@ export class StateController {
             }
         }
     }
+
+    async getById(req: FastifyRequest<{ Params: State }>, reply: FastifyReply) {
+        try {
+            const { id } = req.params
+
+            const state = await this.service.getById(id);
+
+            if (!state) {
+                return reply.code(200).send({
+                    state,
+                    message: "Nenhum estado encontrado"
+                });
+            }
+            return reply.code(200).send(state);
+        } catch (error: any) {
+            console.log(`Erro ao buscar estado: ${error.message}`);
+
+            switch (error.message) {
+                case "ID do estado é inválido":
+                    reply.code(404).send({
+                        message: error.message
+                    });
+                    break;
+
+                default:
+                    reply.code(500).send({
+                        message: error.message
+                    });
+                    break;
+            }
+        }
+    }
 }

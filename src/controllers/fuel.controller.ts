@@ -43,4 +43,37 @@ export class FuelController {
             }
         }
     }
+
+    async getById(req: FastifyRequest<{ Params: Fuel }>, reply: FastifyReply) {
+        try {
+            const { id } = req.params
+
+            const fuel: Fuel = await this.service.getById(id);
+
+            if (!fuel) {
+                return reply.code(200).send({
+                    fuel,
+                    message: "Nenhum combustível encontrado"
+                });
+            }
+
+            return reply.code(200).send(fuel);
+        } catch (error: any) {
+            console.log(`Erro ao buscar combustível: ${error.message}`);
+
+            switch (error.message) {
+                case "ID do combustível é inválida":
+                    reply.code(400).send({
+                        message: error.message
+                    });
+                    break;
+
+                default:
+                    reply.code(500).send({
+                        message: error.message
+                    });
+                    break;
+            }
+        }
+    }
 }

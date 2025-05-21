@@ -11,6 +11,38 @@ export class ColorController {
         return reply.send(colors);
     }
 
+    async getById(req: FastifyRequest<{ Params: Color }>, reply: FastifyReply) {
+        try {
+            const { id } = req.params
+
+            const color: Color = await this.service.getById(id);
+
+            if (!color) {
+                return reply.code(200).send({
+                    message: "Nenhuma cor encontrada"
+                });
+            }
+
+            return reply.code(200).send(color);
+        } catch (error: any) {
+            console.log(`Erro ao buscar cor: ${error.message}`);
+
+            switch (error.message) {
+                case "ID da cor é inválida":
+                    reply.code(404).send({
+                        message: error.message
+                    });
+                    break;
+
+                default:
+                    reply.code(500).send({
+                        message: error.message
+                    });
+                    break;
+            }
+        }
+    }
+
     async getByDescription(req: FastifyRequest<{ Params: Color }>, reply: FastifyReply) {
         try {
             const { description } = req.params

@@ -14,9 +14,16 @@ export default async function modelRoute(fastify: FastifyInstance) {
     });
 
     fastify.get(
-        '/model/:description',
+        '/model/description/:description',
         async (request: FastifyRequest<{ Params: Model }>, reply: FastifyReply) => {
             return controller.getByDescription(request, reply)
+        }
+    )
+
+    fastify.get(
+        '/model/id/:id',
+        async (request: FastifyRequest<{ Params: Model }>, reply: FastifyReply) => {
+            return controller.getById(request, reply)
         }
     )
 

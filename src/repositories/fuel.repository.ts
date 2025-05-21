@@ -13,6 +13,20 @@ export class FuelRepository {
         }
     }
 
+    async getById(id: string) {
+        try {
+            const res = await prisma.fuel.findUnique({
+                where: {
+                    id: id
+                }
+            });
+
+            return res;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
     async getByDescription(description: string) {
         try {
             const res = await prisma.fuel.findMany({

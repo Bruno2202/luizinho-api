@@ -5,7 +5,7 @@ import { FuelService } from '../services/fuel.service';
 import { FuelController } from '../controllers/fuel.controller';
 
 const repository = new FuelRepository;
-const service = new FuelService(repository);
+export const service = new FuelService(repository);
 const controller = new FuelController(service);
 
 export default async function fuelRoute(fastify: FastifyInstance) {
@@ -14,9 +14,16 @@ export default async function fuelRoute(fastify: FastifyInstance) {
     })
 
     fastify.get(
-        '/fuel/:description',
+        '/fuel/description/:description',
         async (request: FastifyRequest<{ Params: Fuel }>, reply: FastifyReply) => {
             return controller.getByDescritpion(request, reply)
+        }
+    )
+
+    fastify.get(
+        '/fuel/id/:id',
+        async (request: FastifyRequest<{ Params: Fuel }>, reply: FastifyReply) => {
+            return controller.getById(request, reply)
         }
     )
 }

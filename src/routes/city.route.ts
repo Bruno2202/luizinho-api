@@ -14,9 +14,16 @@ export default async function cityRoute(fastify: FastifyInstance) {
     })
 
     fastify.get(
-        '/city/:name',
+        '/city/name/:name',
         async (request: FastifyRequest<{ Params: City }>, reply: FastifyReply) => {
             return controller.getByName(request, reply)
+        }
+    )
+
+    fastify.get(
+        '/city/id/:name',
+        async (request: FastifyRequest<{ Params: City }>, reply: FastifyReply) => {
+            return controller.getById(request, reply)
         }
     )
 

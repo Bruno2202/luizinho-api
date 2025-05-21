@@ -14,9 +14,16 @@ export default async function transmissionRoute(fastify: FastifyInstance) {
     })
 
     fastify.get(
-        '/transmission/:description',
+        '/transmission/descriptionq:description',
         async (request: FastifyRequest<{ Params: Transmission }>, reply: FastifyReply) => {
             return controller.getByDescription(request, reply)
+        }
+    )
+
+    fastify.get(
+        '/transmission/id/:id',
+        async (request: FastifyRequest<{ Params: Transmission }>, reply: FastifyReply) => {
+            return controller.getById(request, reply)
         }
     )
 }

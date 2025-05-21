@@ -14,9 +14,16 @@ export default async function stateRoute(fastify: FastifyInstance) {
     })
 
     fastify.get(
-        '/state/:name',
+        '/state/name/:name',
         async (request: FastifyRequest<{ Params: State }>, reply: FastifyReply) => {
             return controller.getByName(request, reply)
+        }
+    )
+
+    fastify.get(
+        '/state/id/:id',
+        async (request: FastifyRequest<{ Params: State }>, reply: FastifyReply) => {
+            return controller.getById(request, reply)
         }
     )
 }

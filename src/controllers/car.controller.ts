@@ -45,6 +45,40 @@ export class CarController {
         }
     }
 
+    async getById(req: FastifyRequest<{ Params: Car }>, reply: FastifyReply) {
+        try {
+            const { id } = req.params
+
+            const cars: Car = await this.service.getById(id);
+
+            if (!cars) {
+                return reply.code(200).send({
+                    cars,
+                    message: "Nenhum carro encontrado"
+                });
+            }
+
+            return reply.code(200).send(cars);
+        } catch (error: any) {
+            console.log(`Erro ao buscar carro: ${error.message}`);
+
+            switch (error.message) {
+                case "ID do carro é inválida":
+                    reply.code(404).send({
+                        cars: [],
+                        message: error.message
+                    });
+                    break;
+
+                default:
+                    reply.code(500).send({
+                        message: error.message
+                    });
+                    break;
+            }
+        }
+    }
+
     async registerCar(req: FastifyRequest<{ Body: Car }>, reply: FastifyReply) {
         try {
             const car: Car = req.body
@@ -57,6 +91,9 @@ export class CarController {
 
             switch (error.message) {
                 case "A descrição do carro é inválida":
+                case "Placa do carro é inválida":
+                case "A placa informada já está em uso":
+                case "O status de venda não foi informado":
                     reply.code(400).send({
                         message: error.message
                     });

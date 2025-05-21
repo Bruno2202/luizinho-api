@@ -15,9 +15,16 @@ export default async function clientRoute(fastify: FastifyInstance) {
     })
 
     fastify.get(
-        '/client/:name',
+        '/client/name/:name',
         async (request: FastifyRequest<{ Params: Client }>, reply: FastifyReply) => {
             return controller.getByName(request, reply)
+        }
+    )
+
+    fastify.get(
+        '/client/id/:name',
+        async (request: FastifyRequest<{ Params: Client }>, reply: FastifyReply) => {
+            return controller.getById(request, reply)
         }
     )
 

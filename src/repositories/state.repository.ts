@@ -39,4 +39,18 @@ export class StateRepository {
             throw new Error(error.message);
         }
     }
+
+    async getById(id: string) {
+        try {
+            const res = await prisma.state.findUnique({
+                where: {
+                    id: id
+                },
+            });
+
+            return res;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
 }

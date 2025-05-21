@@ -14,9 +14,16 @@ export default async function categoryRoute(fastify: FastifyInstance) {
     })
 
     fastify.get(
-        '/category/:description',
+        '/category/description/:description',
         async (request: FastifyRequest<{ Params: Category }>, reply: FastifyReply) => {
             return controller.getByDescription(request, reply)
+        }
+    )
+
+    fastify.get(
+        '/category/id/:id',
+        async (request: FastifyRequest<{ Params: Category }>, reply: FastifyReply) => {
+            return controller.getById(request, reply)
         }
     )
 

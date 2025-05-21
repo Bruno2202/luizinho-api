@@ -7,6 +7,8 @@ import { CategoryService } from "./category.service";
 import { TypeService } from "./type.service";
 import { BrandService } from "./brand.service";
 import { ModelService } from "./model.service";
+import { FuelService } from "./fuel.service";
+import { formatPlate } from "../utils/formatPlate";
 
 export class CarService {
     constructor(
@@ -16,7 +18,7 @@ export class CarService {
         private readonly typeService: TypeService,
         private readonly categoryService: CategoryService,
         private readonly transmissionService: TransmissionService,
-        // private readonly fuelService: FuelService,
+        private readonly fuelService: FuelService,
         private readonly colorService: ColorService,
     ) { }
 
@@ -54,18 +56,28 @@ export class CarService {
         }
     }
 
+    async getByPlate(plate: string) {
+        try {
+            if (!validatePlate(plate)) {
+                throw new Error("Placa do carro é inválida");
+            }
+
+            const res = await this.repository.getByPlate(plate);
+
+            return res;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
     async registerCar(car: Car) {
         try {
             if (!car.description || car.description.trim().length === 0 || car.description.trim().length > 50) {
                 throw new Error("A descricação do carro é inválido");
             }
 
-            if (!validatePlate(car.plate)) {
-                throw new Error("Placa do carro é inválida");
-            }
-
             if (typeof car.sold !== 'boolean') {
-                throw new Error("O status de venda não foi informado");
+                throw new Error("Status do carro não foi informado");
             }
 
             if (car.typeId) {
@@ -73,20 +85,26 @@ export class CarService {
             }
 
             if (car.categoryId) {
-                await this.categoryService.getById(car.brandId);
+                await this.categoryService.getById(car.categoryId);
             }
 
-
             if (car.transmissionId) {
-                await this.transmissionService.getById(car.brandId);
+                await this.transmissionService.getById(car.transmissionId);
             }
 
             if (car.fuelId) {
-                // await this.fuelService.getById(car.brandId);
+                await this.fuelService.getById(car.fuelId);
             }
 
             if (car.colorId) {
-                await this.colorService.getById(car.brandId);
+                await this.colorService.getById(car.colorId);
+            }
+
+            if (car.plate) {
+                const existingCar = await this.getByPlate(formatPlate(car.plate));
+                if (existingCar) {
+                    throw new Error("A placa informada já está em uso")
+                }
             }
 
             await this.modelService.getById(car.modelId);
@@ -100,6 +118,7 @@ export class CarService {
 
     async updateCar(car: Car) {
         try {
+            console.log(car)
             await this.getById(car.id);
 
             return await this.repository.updateCar(car);

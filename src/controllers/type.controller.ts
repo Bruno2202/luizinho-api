@@ -44,6 +44,39 @@ export class TypeController {
         }
     }
 
+    async getById(req: FastifyRequest<{ Params: Type }>, reply: FastifyReply) {
+        try {
+            const { id } = req.params
+
+            const type: Type = await this.service.getById(id);
+
+            if (!type) {
+                return reply.code(200).send({
+                    type,
+                    message: "Nenhum tipo encontrado"
+                });
+            }
+
+            return reply.code(200).send(type);
+        } catch (error: any) {
+            console.log(`Erro ao buscar tipo: ${error.message}`);
+
+            switch (error.message) {
+                case "ID do tipo é inválido":
+                    reply.code(404).send({
+                        message: error.message
+                    });
+                    break;
+
+                default:
+                    reply.code(500).send({
+                        message: error.message
+                    });
+                    break;
+            }
+        }
+    }
+
     async registerType(req: FastifyRequest<{ Body: Type }>, reply: FastifyReply) {
         try {
             const type: Type = req.body
