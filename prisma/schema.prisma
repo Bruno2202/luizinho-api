@@ -1,0 +1,210 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Car {
+  id              Int           @id @default(autoincrement())
+  description     String
+  plate           String        @unique
+  renavam         String?       @db.VarChar(11)
+  chassis         String?       @db.VarChar(17)
+  manufactureYear Int?
+  modelYear       Int?
+  mileage         Int?
+  salePrice       Float?
+  observation     String?
+  sold            Boolean       @default(false)
+  images          String?
+  typeId          Int?
+  categoryId      Int?
+  transmissionId  Int?
+  fuelId          String?
+  colorId         Int?
+  modelId         Int
+  brandId         Int
+  brand           Brand         @relation(fields: [brandId], references: [id])
+  category        Category?     @relation(fields: [categoryId], references: [id])
+  color           Color?        @relation(fields: [colorId], references: [id])
+  fuel            Fuel?         @relation(fields: [fuelId], references: [id])
+  model           Model         @relation(fields: [modelId], references: [id])
+  transmission    Transmission? @relation(fields: [transmissionId], references: [id])
+  type            Type?         @relation(fields: [typeId], references: [id])
+  movement        Movement[]
+
+  @@map("car")
+}
+
+model Brand {
+  id   Int    @id @default(autoincrement())
+  name String
+  cars Car[]
+
+  @@map("brand")
+}
+
+model Model {
+  id          Int    @id @default(autoincrement())
+  description String
+  cars        Car[]
+
+  @@map("model")
+}
+
+model Color {
+  id          Int    @id @default(autoincrement())
+  description String
+  cars        Car[]
+
+  @@map("color")
+}
+
+model Fuel {
+  id          String @id @unique
+  description String
+  cars        Car[]
+
+  @@map("fuel")
+}
+
+model Transmission {
+  id          Int    @id @default(autoincrement())
+  description String
+  cars        Car[]
+
+  @@map("transmission")
+}
+
+model Category {
+  id          Int    @id @default(autoincrement())
+  description String
+  cars        Car[]
+
+  @@map("category")
+}
+
+model Type {
+  id          Int    @id @default(autoincrement())
+  description String
+  cars        Car[]
+
+  @@map("type")
+}
+
+model Client {
+  id               String     @id @default(uuid())
+  name             String
+  picture          String?
+  cpf              String?    @unique @db.VarChar(11)
+  rg               String?    @db.VarChar(10)
+  contact          String?
+  address          String?
+  neighborhood     String?
+  number           String?
+  zipCode          String?
+  cityId           Int?
+  birthDate        DateTime?  @db.Date
+  registrationDate DateTime?  @db.Date
+  city             City?      @relation(fields: [cityId], references: [id])
+  purchase         Purchase[] @relation("Purchase")
+  sale             Sale[]     @relation("Sale")
+
+  @@map("client")
+}
+
+model City {
+  id      Int      @id @default(autoincrement())
+  name    String
+  ufId    String   @db.VarChar(2)
+  uf      State    @relation(fields: [ufId], references: [id])
+  clients Client[]
+  Store   Store[]
+
+  @@map("city")
+}
+
+model State {
+  id     String @id @db.VarChar(2)
+  name   String
+  cities City[]
+
+  @@map("state")
+}
+
+model Store {
+  id           Int     @id @default(autoincrement())
+  name         String
+  address      String?
+  neighborhood String?
+  cnpj         String?
+  contact      String?
+  number       String?
+  cityId       Int?
+
+  city City? @relation(fields: [cityId], references: [id])
+
+  @@map("store")
+}
+
+model Movement {
+  saleId     Int?
+  carId      Int
+  purchaseId Int?
+  id         Int       @id @default(autoincrement())
+  car        Car       @relation(fields: [carId], references: [id])
+  purchase   Purchase? @relation(fields: [purchaseId], references: [id])
+  sale       Sale?     @relation(fields: [saleId], references: [id])
+
+  @@map("movement")
+}
+
+model Purchase {
+  id            Int        @id @default(autoincrement())
+  purchaseValue Float?
+  sellerId      String
+  purchaseDate  DateTime?
+  movement      Movement[]
+  seller        Client     @relation("Purchase", fields: [sellerId], references: [id])
+
+  @@map("purchase")
+}
+
+model Sale {
+  id               Int             @id @default(autoincrement())
+  costValue        Float?
+  saleDate         DateTime?
+  observation      String?         @db.VarChar(255)
+  paymentCondition String?
+  buyerId          String
+  saleValue        Float
+  expenseRecords   ExpenseRecord[]
+  movement         Movement[]
+  buyer            Client          @relation("Sale", fields: [buyerId], references: [id])
+
+  @@map("sale")
+}
+
+model Expense {
+  id             Int             @id @default(autoincrement())
+  description    String
+  expenseValue   Float
+  expenseRecords ExpenseRecord[]
+
+  @@map("expense")
+}
+
+model ExpenseRecord {
+  expenseId     Int
+  salesRecordId Int
+  amount        Int
+  totalExpenses Float
+  expense       Expense @relation(fields: [expenseId], references: [id])
+  salesRecord   Sale    @relation(fields: [salesRecordId], references: [id])
+
+  @@id([expenseId, salesRecordId])
+  @@map("expense_record")
+}
