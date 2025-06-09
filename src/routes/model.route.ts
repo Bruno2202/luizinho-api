@@ -3,12 +3,15 @@ import { ModelController } from '../controllers/model.controller';
 import { ModelService } from '../services/model.service';
 import { ModelRepository } from '../repositories/model.repository';
 import { Model } from '@prisma/client';
+import { AuthMiddleware } from '../middlewares/AuthMiddleware';
 
 const repository = new ModelRepository();
 export const service = new ModelService(repository);
 const controller = new ModelController(service);
 
 export default async function modelRoute(fastify: FastifyInstance) {
+    fastify.addHook('preHandler', AuthMiddleware);
+
     fastify.get('/model', async (request: FastifyRequest, reply: FastifyReply) => {
         return controller.getAllModels(request, reply);
     });

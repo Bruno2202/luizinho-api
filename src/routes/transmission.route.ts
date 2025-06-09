@@ -3,12 +3,15 @@ import { Transmission } from '@prisma/client';
 import { TransmissionRepository } from '../repositories/transmission.repository';
 import { TransmissionService } from '../services/transmission.service';
 import { TransmissionController } from '../controllers/transmission.controller';
+import { AuthMiddleware } from '../middlewares/AuthMiddleware';
 
 const repository = new TransmissionRepository;
 export const service = new TransmissionService(repository);
 const controller = new TransmissionController(service);
 
 export default async function transmissionRoute(fastify: FastifyInstance) {
+    fastify.addHook('preHandler', AuthMiddleware);
+
     fastify.get('/transmission', async (request: FastifyRequest, reply: FastifyReply) => {
         return controller.getAllTransmissions(request, reply)
     })

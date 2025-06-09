@@ -6,12 +6,15 @@ import { SaleController } from '../controllers/sale.controller';
 import { service as clientService } from '../routes/client.route';
 import { SaleBody } from '../interfaces/sale.interface';
 import { service as movementService } from '../routes/movement.route';
+import { AuthMiddleware } from '../middlewares/AuthMiddleware';
 
 const repository = new SaleRepository();
 const service = new SaleService(repository, clientService, movementService);
 const controller = new SaleController(service);
 
 export default async function saleRoute(fastify: FastifyInstance) {
+    fastify.addHook('preHandler', AuthMiddleware);
+
     fastify.post(
         '/sale',
         async (request: FastifyRequest<{ Body: SaleBody }>, reply: FastifyReply) => {

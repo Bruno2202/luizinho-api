@@ -3,12 +3,15 @@ import { Category } from '@prisma/client';
 import { CategoryService } from '../services/category.service';
 import { CategoryController } from '../controllers/category.controller';
 import { CategoryRepository } from '../repositories/category.repository';
+import { AuthMiddleware } from '../middlewares/AuthMiddleware';
 
 const repository = new CategoryRepository;
 export const service = new CategoryService(repository);
 const controller = new CategoryController(service);
 
 export default async function categoryRoute(fastify: FastifyInstance) {
+    fastify.addHook('preHandler', AuthMiddleware);
+
     fastify.get('/category', async (request: FastifyRequest, reply: FastifyReply) => {
         return controller.getAllCategories(request, reply)
     })

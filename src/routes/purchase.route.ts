@@ -6,12 +6,15 @@ import { PurchaseController } from '../controllers/purchase.controller';
 import { PurchaseBody } from '../interfaces/purchase.interface';
 import { service as clienteService } from '../routes/client.route';
 import { service as movementService } from '../routes/movement.route';
+import { AuthMiddleware } from '../middlewares/AuthMiddleware';
 
 const repository = new PurchaseRepository();
 const service = new PurchaseService(repository, clienteService, movementService);
 const controller = new PurchaseController(service);
 
 export default async function purchaseRoute(fastify: FastifyInstance) {
+    fastify.addHook('preHandler', AuthMiddleware);
+
     fastify.post(
         '/purchase',
         async (request: FastifyRequest<{ Body: PurchaseBody }>, reply: FastifyReply) => {

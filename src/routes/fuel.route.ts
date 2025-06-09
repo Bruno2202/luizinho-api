@@ -3,12 +3,15 @@ import { Fuel } from '@prisma/client';
 import { FuelRepository } from '../repositories/fuel.repository';
 import { FuelService } from '../services/fuel.service';
 import { FuelController } from '../controllers/fuel.controller';
+import { AuthMiddleware } from '../middlewares/AuthMiddleware';
 
 const repository = new FuelRepository;
 export const service = new FuelService(repository);
 const controller = new FuelController(service);
 
 export default async function fuelRoute(fastify: FastifyInstance) {
+    fastify.addHook('preHandler', AuthMiddleware);
+
     fastify.get('/fuel', async (request: FastifyRequest, reply: FastifyReply) => {
         return controller.getAllFuels(request, reply)
     })

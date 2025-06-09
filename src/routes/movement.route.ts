@@ -4,12 +4,15 @@ import { MovementService } from '../services/movement.service';
 import { MovementController } from '../controllers/movement.controller';
 import { service as carService } from '../routes/car.route';
 import { MovementRepository } from '../repositories/movement.repository';
+import { AuthMiddleware } from '../middlewares/AuthMiddleware';
 
 const repository = new MovementRepository();
 export const service = new MovementService(repository, carService);
 const controller = new MovementController(service);
 
 export default async function movementRoute(fastify: FastifyInstance) {
+    fastify.addHook('preHandler', AuthMiddleware);
+
     fastify.get('/movement', async (request: FastifyRequest, reply: FastifyReply) => {
         return controller.getAllMovements(request, reply)
     });

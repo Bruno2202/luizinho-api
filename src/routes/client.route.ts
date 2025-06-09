@@ -4,12 +4,15 @@ import { ClientRepository } from '../repositories/client.repository';
 import { ClientService } from '../services/client.service';
 import { ClientController } from '../controllers/client.controller';
 import { service as cityService } from './city.route';
+import { AuthMiddleware } from '../middlewares/AuthMiddleware';
 
 const repository = new ClientRepository();
 export const service = new ClientService(repository, cityService);
 const controller = new ClientController(service);
 
 export default async function clientRoute(fastify: FastifyInstance) {
+    fastify.addHook('preHandler', AuthMiddleware);
+
     fastify.get('/client', async (request: FastifyRequest, reply: FastifyReply) => {
         return controller.getAllClients(request, reply)
     })

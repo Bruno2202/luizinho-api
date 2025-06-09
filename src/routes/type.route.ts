@@ -3,12 +3,15 @@ import { TypeService } from '../services/type.service';
 import { TypeController } from '../controllers/type.controller';
 import { TypeRepository } from '../repositories/type.repository';
 import { Type } from '@prisma/client';
+import { AuthMiddleware } from '../middlewares/AuthMiddleware';
 
 const repository = new TypeRepository();
 export const service = new TypeService(repository);
 const controller = new TypeController(service);
 
 export default async function typeRoute(fastify: FastifyInstance) {
+    fastify.addHook('preHandler', AuthMiddleware);
+
     fastify.get('/type', async (request: FastifyRequest, reply: FastifyReply) => {
         return controller.getAllTypes(request, reply);
     });

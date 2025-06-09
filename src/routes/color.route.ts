@@ -3,12 +3,15 @@ import { ColorService } from '../services/color.service';
 import { ColorController } from '../controllers/color.controller';
 import { ColorRepository } from '../repositories/color.repository';
 import { Color } from '@prisma/client';
+import { AuthMiddleware } from '../middlewares/AuthMiddleware';
 
 const repository = new ColorRepository();
 export const service = new ColorService(repository);
 const controller = new ColorController(service);
 
 export default async function colorRoute(fastify: FastifyInstance) {
+    fastify.addHook('preHandler', AuthMiddleware);
+
     fastify.get('/color', async (request: FastifyRequest, reply: FastifyReply) => {
         return controller.getAllColors(request, reply)
     })

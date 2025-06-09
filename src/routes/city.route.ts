@@ -3,12 +3,15 @@ import { City } from '@prisma/client';
 import { CityController } from '../controllers/city.controller';
 import { CityService } from '../services/city.service';
 import { CityRepository } from '../repositories/city.repository';
+import { AuthMiddleware } from '../middlewares/AuthMiddleware';
 
 const repository = new CityRepository;
 export const service = new CityService(repository);
 const controller = new CityController(service);
 
 export default async function cityRoute(fastify: FastifyInstance) {
+    fastify.addHook('preHandler', AuthMiddleware);
+    
     fastify.get('/city', async (request: FastifyRequest, reply: FastifyReply) => {
         return controller.getAllCities(request, reply)
     })

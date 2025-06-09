@@ -3,15 +3,20 @@ import { BrandController } from '../controllers/brand.controller';
 import { BrandService } from '../services/brand.service';
 import { Brand } from '@prisma/client';
 import { BrandRepository } from '../repositories/brand.repository';
+import { AuthMiddleware } from '../middlewares/AuthMiddleware';
 
 const repository = new BrandRepository;
 export const service = new BrandService(repository);
 const controller = new BrandController(service);
 
 export default async function brandRoute(fastify: FastifyInstance) {
-    fastify.get('/brand', async (request: FastifyRequest, reply: FastifyReply) => {
-        return controller.getAllBrands(request, reply)
-    })
+    fastify.addHook('preHandler', AuthMiddleware);
+
+    fastify.get(
+        '/brand',
+        async (request: FastifyRequest, reply: FastifyReply) => {
+            return controller.getAllBrands(request, reply)
+        })
 
     fastify.get(
         '/brand/name/:name',

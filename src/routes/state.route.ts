@@ -3,12 +3,15 @@ import { State } from '@prisma/client';
 import { StateService } from '../services/state.service';
 import { StateRepository } from '../repositories/state.repository';
 import { StateController } from '../controllers/state.controller';
+import { AuthMiddleware } from '../middlewares/AuthMiddleware';
 
 const repository = new StateRepository;
 const service = new StateService(repository);
 const controller = new StateController(service);
 
 export default async function stateRoute(fastify: FastifyInstance) {
+    fastify.addHook('preHandler', AuthMiddleware);
+
     fastify.get('/state', async (request: FastifyRequest, reply: FastifyReply) => {
         return controller.getAllStates(request, reply)
     })
