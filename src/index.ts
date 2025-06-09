@@ -15,6 +15,8 @@ import purchaseRoute from './routes/purchase.route';
 import saleRoute from './routes/sale.route';
 import movementRoute from './routes/movement.route';
 import storeRoute from './routes/store.route';
+import userRoute from './routes/user.route';
+import authRoute from './routes/auth.route';
 
 const server = fastify();
 
@@ -38,6 +40,8 @@ server.register(purchaseRoute);
 server.register(saleRoute);
 server.register(movementRoute);
 server.register(storeRoute);
+server.register(userRoute);
+server.register(authRoute);
 
 server.listen({
     port: 3000,
