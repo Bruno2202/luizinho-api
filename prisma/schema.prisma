@@ -208,3 +208,13 @@ model ExpenseRecord {
   @@id([expenseId, salesRecordId])
   @@map("expense_record")
 }
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  pic      String?
+  password String
+  email    String @unique
+
+  @@map("user")
+}
